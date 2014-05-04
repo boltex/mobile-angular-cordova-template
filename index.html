@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+
+
+        <link rel="stylesheet" href="css/mobile-angular-ui-base.min.css">
+        <link rel="stylesheet" href="css/mobile-angular-ui-desktop.min.css">
+        <link rel="stylesheet" href="css/main.css">
+        <title>Gen Cor Ocx</title>
+
+    </head>
+    <body>
+
+<!-- Sidebars -->
+<div ng-include="'views/sidebar.html'" class="sidebar sidebar-left" toggleable parent-active-class="sidebar-left-in" id="mainSidebar"></div>
+
+<div class="app">
+  
+  <!-- Navbars -->
+  <div class="navbar navbar-app navbar-absolute-top">
+
+      <div class="navbar-brand navbar-brand-center" yield-to="title">
+        <span>cor2</span>
+      </div>
+
+      <div class="btn-group pull-left">
+        <div ng-click="toggle('mainSidebar')" class="btn btn-navbar sidebar-toggle">
+          <i class="fa fa-bars"></i> Menu
+        </div>
+      </div>
+
+      <div class="btn-group pull-right" yield-to="navbarAction">
+        <div class="btn btn-navbar">
+          <i class="fa fa-plus"></i> New
+        </div>
+      </div>
+  </div>
+
+  <div class="navbar navbar-app navbar-absolute-bottom">
+    <div class="btn-group justified">
+      <a href="#/route1" class="btn btn-navbar btn-icon-only"><i class="fa fa-home fa-navbar"></i></a>
+      <a href="#/route2" class="btn btn-navbar btn-icon-only"><i class="fa fa-list fa-navbar"></i></a>
+    </div>
+  </div>
+
+  <div class="app-body">
+      <ng-view class="app-content"></ng-view>
+</div>
+</div>
+
+  <script type="text/javascript" src="cordova.js"></script>
+
+  <script src="js/jquery.min.js"></script>
+  <script src="js/angular.js"></script>
+  <script src="js/angular-route.min.js"></script>
+  <script src="js/mobile-angular-ui.min.js"></script>
+  <script src="js/mobile-angular-ui-touch-fastclick.min.js"></script>
+  <script src="js/mobile-angular-ui-scrollable-overthrow.min.js"></script>
+
+
+        <script type="text/javascript" src="js/app.js"></script>
+        <script type="text/javascript" src="js/controllers/main.js"></script>
+        <script type="text/javascript" src="js/controllers/page2.js"></script>
+        <script type="text/javascript" src="js/controllers/dtbs.js"></script>
+        <script type="text/javascript" src="js/cordovainit.js"></script>
+
+    </body>
+</html>
