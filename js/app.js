@@ -1,7 +1,6 @@
 'use strict';
 
-angular
-  .module('gencorApp', [
+angular.module('gencorApp', [
     'ngRoute',
     'mobile-angular-ui',
     'mobile-angular-ui.touch',
@@ -21,6 +20,10 @@ angular
         templateUrl: 'views/dtbs.html',
         controller: 'DtbsCtrl'
       })
+      .when('/scroll', {
+        templateUrl: 'views/scroll.html',
+        controller: 'ScrollCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });
@@ -28,7 +31,7 @@ angular
   .factory("myService", function(){
 
     return {
-      sharedObject: { 
+      sharedObject: {
                       data : 'Joe',
                       data2 : 'amy'
                     }
