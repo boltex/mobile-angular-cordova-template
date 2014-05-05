@@ -4,3 +4,9 @@
   <p ng-class="{messageon:isconnected, messageoff:!isconnected}">Device is Ready</p>
 
 <p>the shared variable is : {{myVar.data}}</p>
+
+<p>debug messages below:</p>
+
+<ul>
+	<li ng-repeat=" entry in myVar.loglist">{{entry}}</li>
+</ul>

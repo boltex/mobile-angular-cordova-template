@@ -10,7 +10,8 @@ var CordovaInit = function() {
  
 	var receivedEvent = function(event) {
 		console.log('Start event received, bootstrapping application setup.');
-		angular.bootstrap($('body'), ['gencorApp']);
+		//angular.bootstrap($('body'), ['gencorApp']);
+		angular.bootstrap(document, ['gencorApp']);
 	};
  
 	this.bindEvents = function() {
@@ -28,7 +29,7 @@ var CordovaInit = function() {
 	}
 };
  
-$(function() {
+angular.element(document).ready(function() {
 	console.log('Bootstrapping!');
 	new CordovaInit();
 });
