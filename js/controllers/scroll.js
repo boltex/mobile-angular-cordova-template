@@ -5,7 +5,7 @@ angular.module('gencorApp')
     
   var scrollItems = [];
   for (var i=1; i<=100; i++) {
-  scrollItems.push("Dummy " + i);
+  scrollItems.push("Dummy" + i);
   }
   $scope.scrollItems = scrollItems;
 
