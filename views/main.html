@@ -8,5 +8,5 @@
 <p>debug messages below:</p>
 
 <ul>
-	<li ng-repeat=" entry in myVar.loglist">{{entry}}</li>
+	<li ng-repeat=" entry in myVar.loglist track by $index">{{entry}}</li>
 </ul>

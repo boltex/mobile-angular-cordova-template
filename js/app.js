@@ -1,12 +1,13 @@
 'use strict';
 
+
 angular.module('gencorApp', [
     'ngRoute',
     'mobile-angular-ui',
     'mobile-angular-ui.touch',
     'mobile-angular-ui.scrollable'
   ])
-  .config(function ($routeProvider) {
+  .config(function ($routeProvider, $httpProvider) {
     $routeProvider
       .when('/', {
         templateUrl: 'views/main.html',
@@ -43,6 +44,52 @@ angular.module('gencorApp', [
       .otherwise({
         redirectTo: '/'
       });
+
+ // Use x-www-form-urlencoded Content-Type
+  $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+ 
+  /**
+   * The workhorse; converts an object to x-www-form-urlencoded serialization.
+   * @param {Object} obj
+   * @return {String}
+   */ 
+  var param = function(obj) {
+    var query = '', name, value, fullSubName, subName, subValue, innerObj, i;
+      
+    for(name in obj) {
+      value = obj[name];
+        
+      if(value instanceof Array) {
+        for(i=0; i<value.length; ++i) {
+          subValue = value[i];
+          fullSubName = name + '[' + i + ']';
+          innerObj = {};
+          innerObj[fullSubName] = subValue;
+          query += param(innerObj) + '&';
+        }
+      }
+      else if(value instanceof Object) {
+        for(subName in value) {
+          subValue = value[subName];
+          fullSubName = name + '[' + subName + ']';
+          innerObj = {};
+          innerObj[fullSubName] = subValue;
+          query += param(innerObj) + '&';
+        }
+      }
+      else if(value !== undefined && value !== null)
+        query += encodeURIComponent(name) + '=' + encodeURIComponent(value) + '&';
+    }
+      
+    return query.length ? query.substr(0, query.length - 1) : query;
+  };
+ 
+  // Override $http service's default transformRequest
+  $httpProvider.defaults.transformRequest = [function(data) {
+    return angular.isObject(data) && String(data) !== '[object File]' ? param(data) : data;
+  }];
+
+
   })
   .factory("myService", function(){
 
@@ -106,7 +153,7 @@ angular.module('gencorApp', [
       });
     }
 })
-.run(function( $window, $rootScope, myService) {
+.run(function( $window, $rootScope, myService, $http) {
    
     $rootScope.$on("$routeChangeStart", function(){
       $rootScope.loading = true;
@@ -118,10 +165,7 @@ angular.module('gencorApp', [
 
     myService.sharedObject.loglist.push("Hola3");
 
-    console.log('Running ANGULAR App run function');
 //PUSH INSERT
-    
-
     var pushNotification;
 
     myService.sharedObject.loglist.push('Trying to setup PUSH');
@@ -130,31 +174,30 @@ var tokenHandler =function(result) {
         console.log('PUSH token: '+ result);
         // Your iOS push server needs to know the token before it can push to this device
         // here is where you might want to send it the token for later use.
-    }
-    
- var successHandler = function(result) {
+    };
+var successHandler = function(result) {
          console.log('PUSH success:'+ result);
-    }
-    
- var errorHandler = function(error) {
+    };
+var errorHandler = function(error) {
          console.log('PUSH error:'+ error );
-    }
+    };
 
     try 
     { 
         pushNotification = window.plugins.pushNotification;
         if (device.platform == 'android' || device.platform == 'Android' ||
-                device.platform == 'amazon-fireos' ) {
-             myService.sharedObject.loglist.push('registering ' + device.platform);
-            pushNotification.register(successHandler, errorHandler, {"senderID":"37525779694","ecb":"onNotificationGCM"});     // required!
+          device.platform == 'amazon-fireos' ) {
+          myService.sharedObject.loglist.push('registering ' + device.platform);
+          pushNotification.register(successHandler, errorHandler, {"senderID":"37525779694","ecb":"onNotificationGCM"});     // required!
         } else {
-             myService.sharedObject.loglist.push('registering iOS');
-            pushNotification.register(tokenHandler, errorHandler, {"badge":"true","sound":"true","alert":"true","ecb":"onNotificationAPN"});    // required!
+          myService.sharedObject.loglist.push('registering iOS');
+          pushNotification.register(tokenHandler, errorHandler, {"badge":"true","sound":"true","alert":"true","ecb":"onNotificationAPN"});    // required!
         }
+        
     }
     catch(err) 
     { 
-        txt="There was an error on this page.\n\n"; 
+       var txt="There was an error on this page.\n\n"; 
         txt+="Error description: " + err.message + "\n\n"; 
         alert(txt); 
     } 
@@ -165,13 +208,12 @@ var tokenHandler =function(result) {
         if (e.alert) {
               myService.sharedObject.loglist.push('push-notification: ' + e.alert);
              navigator.notification.alert(e.alert);
+             $rootScope.$digest();
         }
-            
         if (e.sound) {
             var snd = new Media(e.sound);
             snd.play();
         }
-        
         if (e.badge) {
             pushNotification.setApplicationIconBadgeNumber(successHandler, e.badge);
         }
@@ -179,17 +221,25 @@ var tokenHandler =function(result) {
     
     // handle GCM notifications for Android
     $window.onNotificationGCM= function(e) {
-        myService.sharedObject.loglist.push('EVENT -> RECEIVED:' + e.event );
+        myService.sharedObject.loglist.push('EVENT RECEIVED is' + e.event );
         
         switch( e.event )
         {
             case 'registered':
             if ( e.regid.length > 0 )
             {
-                 myService.sharedObject.loglist.push('REGISTERED -> REGID:' + e.regid );
+                 myService.sharedObject.loglist.push('REGISTERED REGID is' + e.regid );
+                  
                 // Your GCM push server needs to know the regID before it can push to this device
                 // here is where you might want to send it the regID for later use.
                 console.log("regID = " + e.regid);
+                $http.post('http://fmalboeuf/gcm/register.php', { name: 'roger', email:'roger@oceanex.com', regId:e.regid }).success(function(response) {
+                  myService.sharedObject.loglist.push('Back from register ' + response );
+                  
+                });
+
+
+
             }
             break;
             
@@ -198,37 +248,44 @@ var tokenHandler =function(result) {
                 // you might want to play a sound to get the user's attention, throw up a dialog, etc.
                 if (e.foreground)
                 {
-                     myService.sharedObject.loglist.push('--INLINE NOTIFICATION--' );
+                     myService.sharedObject.loglist.push('INLINE NOTIFICATION' );
                     
                     // if the notification contains a soundname, play it.
-                    var my_media = new Media("/android_asset/www/"+e.soundname);
-                    my_media.play();
+                    //var my_media = new Media("/android_asset/www/"+e.soundname);
+                    //my_media.play();
                 }
                 else
                 {   // otherwise we were launched because the user touched a notification in the notification tray.
-                    if (e.coldstart)
-                         myService.sharedObject.loglist.push('--COLDSTART NOTIFICATION--' );
-                    else
-                     myService.sharedObject.loglist.push('--BACKGROUND NOTIFICATION--' );
+                    if (e.coldstart){
+                         myService.sharedObject.loglist.push('COLDSTART NOTIFICATION' );
+                         
+
+                    }else{
+                     myService.sharedObject.loglist.push('BACKGROUND NOTIFICATION' );
+                      
+                    }
                 }
                     
-                 myService.sharedObject.loglist.push('MESSAGE -> MSG: ' + e.payload.message );
+                 myService.sharedObject.loglist.push('MESSAGE MSG is ' + e.payload.message );
                 //android only
-                 myService.sharedObject.loglist.push('MESSAGE -> MSGCNT: ' + e.payload.msgcnt );
+                 myService.sharedObject.loglist.push('MESSAGE MSGCNT is ' + e.payload.msgcnt );
                 //amazon-fireos only
-                 myService.sharedObject.loglist.push('MESSAGE -> TIMESTAMP: ' + e.payload.timeStamp );
+                 myService.sharedObject.loglist.push('MESSAGE TIMESTAMP is ' + e.payload.timeStamp );
+                  
             break;
             
             case 'error':
-                 myService.sharedObject.loglist.push('ERROR -> MSG:' + e.msg);
+                 myService.sharedObject.loglist.push('ERROR MSG is ' + e.msg);
+                  
             break;
             
             default:
-                 myService.sharedObject.loglist.push('EVENT -> Unknown, an event was received and we do not know what it is');
+                 myService.sharedObject.loglist.push('EVENT Unknown, an event was received and we do not know what it is');
+                  
             break;
         }
+        $rootScope.$digest();
     }
-    
 
 // END OF PUSH INSERT
   });  
