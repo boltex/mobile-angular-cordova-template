@@ -1,9 +1,13 @@
 <p>Oceanex Main Html</p>
   
-  <p ng-class="{messageon:!isconnected, messageoff:isconnected}">Waiting...</p>
-  <p ng-class="{messageon:isconnected, messageoff:!isconnected}">Device is Ready</p>
+  <p ng-class="{messageon:!gcmregistered, messageoff:gcmregistered}">Waiting...</p>
+  <p ng-class="{messageon:gcmregistered, messageoff:!gcmregistered}">Device is Ready</p>
 
 <p>the shared variable is : {{myVar.data}}</p>
+
+<p>scope counter {{counter}}</p>
+
+<p>gcm regid: {{gcmregid}}</p>
 
 <p>debug messages below:</p>
 

@@ -1,0 +1,76 @@
+<div content-for="title">
+  <span>{{log}}</span>
+</div>
+
+<div class="scrollable" ng-hide="ocxlogged">
+ <div class="scrollable-content container section">
+
+ <p>{{gcmregid}} <br />
+ {{gcmregistered}}</p>
+
+
+   <form name="signupDriverID" class="form-horizontal" novalidate  role="form" action="" id="" >
+
+     <div bs-panel title="Identification">
+
+
+
+       <input type="text"
+        ng-model="driver.ocxdriverid"
+        label="Driver ID"
+        required
+        ng-minlength=5
+        ng-maxlength=20  
+        class="form-control input-lg" 
+        name="inputUsername" 
+        id="inputUsername"
+        placeholder="Driver ID" 
+        bs-input />
+       <input type="text" 
+        ng-model="driver.ocxdriverpassword" 
+        label="Password"
+        required
+        ng-minlength=5
+        ng-maxlength=20  
+        class="form-control input-lg" 
+        name="inputPassword" 
+        id="inputPassword"
+        placeholder="Driver Password" 
+        bs-input />
+   
+
+     </div>
+    <div bs-panel class="form-actions">
+    
+        <button ng-disabled="signupDriverID.$invalid || !gcmregistered " class="btn btn-primary btn-lg  btn-block" ng-click="trylogin();" >
+          Log In
+        </button>
+ 
+<p class="text-warning" ng-show="signupDriverID.$invalid || !gcmregistered " >Input a valid Driver ID and Password before pressing Log In</p>
+
+<p  class="text-danger" >{{driver.errormessage}}</p>
+
+
+    </div>
+   </form>
+ </div>
+</div>
+
+<div class="scrollable" ng-show="ocxlogged">
+ <div class="scrollable-content container section">
+   <form action="" id="">
+
+ <div bs-panel title="Driver Logoff">
+       <p>Press to un-register your Driver-Id from this device.</p>
+     </div>
+
+    <div bs-panel class="form-actions">
+      
+        <button class="btn btn-warning btn-lg  btn-block" ng-click="trylogoff();">
+          Log Out
+        </button>
+     
+    </div>
+   </form>
+ </div>
+</div>
