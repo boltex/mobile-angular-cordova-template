@@ -105,37 +105,31 @@ angular.module('gencorApp')
                             $scope.myVar.loglist.push(lastmessage.message + " : " + lastmessage.payload.message );
                     }
                 }
-
-
-
-
-
-
-                // if (lastmessage.message==='registered'){
-                //     $scope.myVar.loglist.push(lastmessage.message + " : " + lastmessage.payload.message );
-                //     $scope.gcmregid = lastmessage.payload ;
-                //     $scope.gcmregistered = true;
-                //     storage.setItem('regid', lastmessage.payload );
-
-                // }else{
-                //     $scope.myVar.loglist.push(lastmessage.message + " : " + lastmessage.payload.message );
-                // }
-
-
-
                }
              }
            );
 
     // init from STARTUP if already notifications received
     for (var index = 0; index < $window.buffermessage.length; ++index) {
-        if ($window.buffermessage[index].message==='registered'){
-                $scope.gcmregid = $window.buffermessage[index].payload ;
-                //$scope.gcmregistered = true;
-                storage.setItem('regid', lastmessage.payload );
-            }else{
-                $scope.myVar.loglist.push($window.buffermessage[index].message + " : " + $window.buffermessage[index].payload.message );
-            }
+                var lastmessage = $window.buffermessage[index].message;
+                if (lastmessage.message==='registered'){
+                    $scope.myVar.loglist.push(lastmessage.message  );
+                    $scope.gcmregid = lastmessage.payload ;
+                    //$scope.gcmregistered = true;
+                    storage.setItem('regid', lastmessage.payload );
+                }else{
+                    switch(lastmessage.payload.message) {
+                        case 'Logged Out':
+                            $scope.log = "Log In"; // Log in if not logged!
+                            $scope.ocxlogged = false;
+                            $scope.driver.errormessage = "";
+                            $scope.driver.ocxdriverid="";
+                            $scope.driver.ocxdriverpassword="";
+                            break;
+                        default:
+                            $scope.myVar.loglist.push(lastmessage.message + " : " + lastmessage.payload.message );
+                    }
+                }
     }
 
     
